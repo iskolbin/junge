@@ -1,0 +1,10 @@
+{
+	"name": "junge",
+	"url" : "https://github.com/iskolbin/junge",
+  "license": "MIT",
+  "tags": ["junge", "utils"],
+  "description": "Set of utils including timers and tweens.",
+  "version": "0.0.1",
+  "releasenote": "Initial release.",
+  "contributors": ["iskolbin"],
+}
