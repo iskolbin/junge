@@ -3,9 +3,9 @@
 // Implementation details:
 //   - efficient inplace heap creation from array: "new" with argument -- array ( Floyd's algorithm );
 //   - safe call "enqueue"( "fastEnqueue" for unsafe call ), which ensure that the element not in the heap;  
-//   - efficient "enqueueAll" operation ( O(n), Floyd's algorithm ). Note that "enqueueAll" doesn't ensure that element not in heap, so use it with care;
+//   - safe efficient "enqueueAll" operation ( O(n), Floyd's algorithm ). Note that "fastEnqueueAll" doesn't ensure that element not in heap, so use it with care;
 //   - optimized "dequeue" operation ( Floyd's sifting algorithm );
-//   - efficient "remove" operation ( indirect heap );
+//   - efficient "remove" operation ( indirect heap ), and fastRemove with no contain check;
 //   - efficient "update" operation if somehow elements priority changed ( indirect heap );
 //   - unstable inplace O(nlogn) heapsort ( about 5 times slower than Array.sort ): 
 //       var data: Array<...> = [...];
@@ -94,13 +94,13 @@ class BinaryHeap<T: Heapable<T>> {
 		data.splice( length, data.length-length );
 	}
 
-	public function remove( v: T ) {
+	public inline function remove( v: T ) {
 		if ( v.heapIndex >= 0 && v.heapIndex < length ) {
 			fastRemove( v );
 		}
 	}
 
-	public function enqueue( v: T ) {
+	public inline function enqueue( v: T ) {
 		if ( !contains( v )) {
 		 	fastEnqueue( v );
 		}
@@ -131,16 +131,24 @@ class BinaryHeap<T: Heapable<T>> {
 	}
 	
 	public function enqueueAll( collection: Iterable<T> ) {
-		var it = collection.iterator();
-		while( it.hasNext()) {
-			data[length] = it.next();
+		for ( v in collection ) if ( !contains( v )) {
+			data[length] = v;
 			data[length].heapIndex = length;
 			length += 1;
 		}
 		algorithmFloyd();
 	}
 	
-	public function update( v: T ) {
+	public function fastEnqueueAll( collection: Iterable<T> ) {
+		for ( v in collection ) {
+			data[length] = v;
+			data[length].heapIndex = length;
+			length += 1;
+		}
+		algorithmFloyd();
+	}
+	
+	public inline function update( v: T ) {
 		if ( contains( v )) {
 			fastUpdate( v );
 		}
